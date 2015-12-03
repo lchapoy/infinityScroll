@@ -14,13 +14,12 @@ angular.module('infinityScrollApp')
   .controller('MainCtrl', function (imageServ,$scope) {
 	 				$scope.options={
 					  'id':'pics',
-					  'limit':10,
-					  'count':10,
+					  'limit':20,
+					  'count':20,
 					  'sort':'top',
 					  'time':'week'
-				}
+				};
 	 
-	  console.log()
 	  
 	
   }) .factory('imageServ',function($resource,baseUrl){
@@ -30,7 +29,7 @@ angular.module('infinityScrollApp')
 		
 		var get=function(obj){
 			return resource.get(obj);
-		}
+		};
 		
 		  return{
 			getImages:get
@@ -39,7 +38,7 @@ angular.module('infinityScrollApp')
 	  return{
 		  templateUrl:"../../views/images.html",
 		  scope:{options:"="},
-		  link:function(scope,el,attr){
+		  link:function(scope,el){
 
 				var container=angular.element(el.find('div')[1]);
 				
@@ -51,42 +50,42 @@ angular.module('infinityScrollApp')
 				imageServ.getImages(scope.options).$promise.then(function(data){
 					var imgData=data.data.children;
 					var div=angular.element('<div>');
-					console.log(div[0])
 					after[0]=(data.data.after);
 					
 					for(var i=0;i<imgData.length;i++){
-						var img=new Image()
+						var img=new Image();
 						//scope.images[i]=
-						if(imgData[i].data.preview)
-						
+						if(imgData[i].data.preview){
 							img.src=(imgData[i].data.preview.images[0].source.url);
-						else{
-							img.src=(imgData[i].data.url+'.jpg')
 						}
-						if((scope.options.limit-1)==i)
+						else{
+							img.src=(imgData[i].data.url+'.jpg');
+						}
+						if((scope.options.limit-1)===i){
 							angular.element(img).on('load',function(){
 								charging=false;
 								number++;
-							})
-								
+							});
+						}		
 							
 						img.className='loopImages';
-						div.append(img)
+						div.append(img);
 					}
-					container.append(div)
 					
 					
-				})
+					
+					container.append(div);
+					
+					
+				});
 				
 				var checker=false;
 				var hei=[0],lastHeight=0;
 				
-			    var checkScroll = function(evt) {
+			    var checkScroll = function() {
 					var rectObject = el[0].getBoundingClientRect();
 					//Check Scroll DOWN
 					if (rectObject.bottom <= window.innerHeight+2000&&!charging) {
-						console.log("trigger 2",rectObject.bottom,window.innerHeight)
-						
 						//Update variables
 						charging=true;
 						hei[number]=rectObject.height;
@@ -100,42 +99,44 @@ angular.module('infinityScrollApp')
 							before[number-1]=(data.data.before);
 							var div=angular.element('<div>');
 							for(var i=0;i<imgData.length;i++){
-								var img=new Image()
+								var img=new Image();
 								//Add new Group
-								if(imgData[i].data.preview)
-								img.src=imgData[i].data.preview.images[0].source.url;
+								if(imgData[i].data.preview){
+									img.src=imgData[i].data.preview.images[0].source.url;
+								}
 								else{
-								img.src=imgData[i].data.url+'.jpg'
+									img.src=imgData[i].data.url+'.jpg';
 								}
 								img.className='loopImages';
-								div.append(img)
-								if((scope.options.limit-1)==i)
-								angular.element(img).on('load',function(){
-									charging=false;
-									number++;
-								})
+								div.append(img);
+								if((scope.options.limit-1)===i){
+									angular.element(img).on('load',function(){
+										charging=false;
+										number++;
+									});
+								}
 							}
 							
 							container.append(div);
 							//Update Variables
 							if(checker){
 								angular.element(container.find('div')[0]).remove();
-								lastHeight=hei[number-1]+(hei[number]-hei[number-1])/3
+								lastHeight=hei[number-1]+(hei[number]-hei[number-1])/3;
 								scope.height=hei[number-1];
 							}
 						
-							checker=true
+							checker=true;
 							
 							
 							
 	
-						})
+						});
 						
 					}
 					
 					// Check scrolling UP
-					if (lastHeight >=(rectObject.height-rectObject.bottom)&&lastHeight!=0&&!charging) {
-						console.log("trigger 1",lastHeight,rectObject.height-rectObject.bottom)
+					if (lastHeight >=(rectObject.height-rectObject.bottom)&&lastHeight!==0&&!charging) {
+					
 						charging=true;
 						number--;
 				
@@ -147,33 +148,37 @@ angular.module('infinityScrollApp')
 							var div=angular.element('<div>');
 							for(var i=0;i<imgData.length;i++){
 								var img=new Image();
-								if(imgData[i].data.preview)
-								img.src=imgData[i].data.preview.images[0].source.url;
+								if(imgData[i].data.preview){
+									img.src=imgData[i].data.preview.images[0].source.url;
+								}
 								else{
-								img.src=imgData[i].data.url+'.jpg'
+								img.src=imgData[i].data.url+'.jpg';
 								}
 								img.className='loopImages';
-								div.append(img)
+								div.append(img);
 								
-								if((scope.options.limit-1)==i)
-								angular.element(img).on('load',function(){
-									charging=false;
-								})
+								if((scope.options.limit-1)===i){
+									angular.element(img).on('load',function(){
+										charging=false;
+									});
+								}
 								
 							}
 							container.prepend(div);
 						
-							if(hei[number-2]!=0)
+							if(hei[number-2]!==0){
 								lastHeight=hei[number-2]+(hei[number-1]-hei[number-2])/3;
-							else
+							}
+							else{
 								lastHeight=0;
+							}
 							
 							angular.element(container.find('div')[2]).remove();
 							scope.height=hei[number-2];
 							
 
 							
-						})
+						});
 						
 					}
 					
@@ -182,5 +187,5 @@ angular.module('infinityScrollApp')
 			
 			 angular.element(window).bind('scroll load', checkScroll);
 		  }
-	  }
+	  };
   });
